@@ -1,0 +1,51 @@
+name: Build SDL3 for iOS (arm64)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout SDL source
+        run: |
+          git clone https://github.com/libsdl-org/SDL.git  sdl3
+          cd sdl3
+          git checkout main
+
+      - name: Create build directory
+        run: |
+          cd sdl3
+          mkdir build && cd build
+
+      - name: Configure with CMake (iOS arm64)
+        run: |
+          cd sdl3/build
+          cmake .. \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DSDL_STATIC=ON \
+            -DSDL_SHARED=OFF \
+            -DSDL_TEST=OFF
+
+      - name: Build SDL3
+        run: |
+          cd sdl3/build
+          make -j$(sysctl -n hw.logicalcpu_max)
+
+      - name: Save artifacts to repo
+        run: |
+          mkdir -p ../artifacts
+          cp sdl3/build/libSDL3.a ../artifacts/
+          find sdl3/build -name SDL3Config.cmake -exec cp {} ../artifacts/ \\;
+
+      - name: Commit and Push Artifacts
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ../artifacts/
+          git commit -m "Add built SDL3 artifacts"
+          git push
