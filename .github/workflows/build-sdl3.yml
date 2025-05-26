@@ -43,14 +43,16 @@ jobs:
           find sdl3/build -name SDL3Config.cmake -exec cp {} ../artifacts/ \;
 
       - name: Commit and Push Artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd ..
           git init
-          git remote add origin https://github.com/ ${{ github.repository }}.git
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git remote add origin https://${{ github.actor }}:${GH_TOKEN}@github.com/${{ github.repository }}.git
           git fetch
           git checkout -b main || git checkout main
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
           git add artifacts/
-          git commit -m "Add built SDL3 artifacts"
+          git commit -m "Add built SDL3 artifacts" || echo "No changes to commit"
           git push origin main --force
