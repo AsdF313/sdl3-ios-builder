@@ -1,3 +1,2 @@
 # SDL3 iOS Builder
-
-This repo builds SDL3 for iOS arm64.
+This repo builds libSDL3.a and SDL3Config.cmake for iOS (arm64).
