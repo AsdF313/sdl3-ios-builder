@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p ../artifacts
           cp sdl3/build/libSDL3.a ../artifacts/
-          find sdl3/build -name SDL3Config.cmake -exec cp {} ../artifacts/ \\;
+           find sdl3/build -name SDL3Config.cmake -exec cp {} ../artifacts/ \;
 
       - name: Commit and Push Artifacts
         run: |
